@@ -1,0 +1,54 @@
+# PDM Personal Edition Configuration
+# Copy this file to config.yaml and edit as needed
+
+pool:
+  name: "My Resource Pool"        # Display name for your pool
+  mcap: 1000000                   # Maximum capacity (hard ceiling)
+  initial_s: 618000               # Initial supply (typically ~61.8% of mcap)
+
+resource:
+  unit: "units"                   # Unit label for display (e.g., "tokens", "kg", "hours")
+
+telemetry:
+  mode: "manual"                  # Options: "manual", "csv", "webhook"
+  csv_path: "./data/telemetry.csv"  # Path to CSV file (if mode is "csv")
+
+schedule:
+  run_time: "00:00"               # Daily PDM step time (HH:MM format)
+  timezone: "UTC"                 # Timezone for scheduling (e.g., "Europe/London", "America/New_York")
+
+dashboard:
+  port: 8080                      # HTTP server port (1024-65535)
+  show_history_days: 30           # Number of days to show in chart
+
+alerts:
+  enabled: false                  # Enable webhook alerts
+  webhook_url: ""                 # Webhook URL for alerts (Slack, Discord, etc.)
+
+# ─────────────────────────────────────────────────────────────────────────
+# TELEMETRY MODES
+# ─────────────────────────────────────────────────────────────────────────
+#
+# manual:   Submit daily Oi and V values via the dashboard or POST to /api/telemetry
+#           Example: curl -X POST http://localhost:8080/api/telemetry \
+#                    -H "Content-Type: application/json" \
+#                    -d '{"oi": 1600000, "v": 12000}'
+#
+# csv:      Reads from a CSV file with format: date,oi,v
+#           Example CSV (data/telemetry.csv):
+#             date,oi,v
+#             2025-01-06,1600000,12000
+#             2025-01-07,1580000,15000
+#
+# webhook:  Receives Oi and V via POST to /api/telemetry from external systems
+#           Uses the same port as the dashboard (dashboard.port)
+#
+# ─────────────────────────────────────────────────────────────────────────
+# NOTES
+# ─────────────────────────────────────────────────────────────────────────
+#
+# - State is persisted to ./data/state.json
+# - History is logged to ./data/history.csv
+# - The PDM step runs daily at the scheduled time
+# - L ratio target is φ (0.618), with stability band [0.60, 0.62]
+#

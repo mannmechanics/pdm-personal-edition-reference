@@ -1,0 +1,39 @@
+IMPORTANT NOTICE – REFERENCE IMPLEMENTATION
+
+This repository contains a Reference Implementation of
+Progressive Depletion Minting (PDM) – Personal Edition.
+
+This implementation exists solely to demonstrate and explore
+the behaviour of the PDM mechanism under controlled conditions.
+
+⸻⸻⸻⸻⸻⸻
+
+THIS IS NOT:
+
+• A production system
+• A guaranteed economic model
+• A certified or compliant implementation
+• A commercial product
+• Financial, legal, or investment advice
+
+⸻⸻⸻⸻⸻⸻
+
+LIMITATION OF LIABILITY
+
+Under no circumstances shall the author be liable for any loss,
+damage, or consequence arising from use or misuse of this software,
+whether direct or indirect.
+
+Users assume full responsibility for all outcomes.
+
+⸻⸻⸻⸻⸻⸻
+
+INTERPRETATION
+
+Any ambiguity in interpretation must favour:
+• System stability
+• Non-extraction
+• Long-term sustainability
+
+This implementation must not be used to infer guarantees
+about real-world economic outcomes.

@@ -1,0 +1,68 @@
+PROGRESSIVE DEPLETION MINTING (PDM)
+PERSONAL EDITION LICENSE
+
+Copyright © Valraj Singh Mann
+All rights reserved.
+
+This software and associated materials constitute the
+"Progressive Depletion Minting (PDM) – Personal Edition"
+Reference Implementation under the Mann Mechanics framework.
+
+⸻⸻⸻⸻⸻⸻
+
+PERMITTED USES
+
+This software may be used, copied, and modified solely for:
+• Personal learning
+• Academic research
+• Educational purposes
+• Non-commercial simulation and experimentation
+
+Use must remain non-commercial at all times.
+
+⸻⸻⸻⸻⸻⸻
+
+PROHIBITED USES
+
+The following are strictly prohibited without an explicit written licence
+from the rights holder:
+
+• Commercial deployment or monetisation
+• Integration into production systems
+• Offering services based on this mechanism
+• Claiming certification, compliance, or endorsement
+• Rebranding or sublicensing
+• Misrepresentation of authorship or origin
+
+⸻⸻⸻⸻⸻⸻
+
+PATENT NOTICE
+
+Progressive Depletion Minting (PDM) includes mechanisms that are
+patent protected or patent pending.
+
+Nothing in this licence grants any rights under patent law.
+
+Unauthorised implementation of patented methods may constitute
+patent infringement regardless of software licence status.
+
+⸻⸻⸻⸻⸻⸻
+
+NO WARRANTY
+
+This software is provided "AS IS", without warranty of any kind,
+express or implied.
+
+The author makes no representations regarding correctness,
+fitness for purpose, or suitability for any application.
+
+Use entirely at your own risk.
+
+⸻⸻⸻⸻⸻⸻
+
+RESERVATION OF RIGHTS
+
+All rights not expressly granted are reserved.
+
+For commercial licensing, certification, or authorised implementation,
+contact the rights holder.
