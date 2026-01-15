@@ -33,6 +33,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -44,6 +45,16 @@ var webhookTelemetry WebhookTelemetry
 type TelemetrySource interface {
 	FetchOi() (float64, error)
 	FetchV() (float64, error)
+}
+
+func todayYYYYMMDD() string {
+	// Use configured schedule timezone if available; fall back to UTC.
+	if cfgFile != nil && cfgFile.Schedule.Timezone != "" {
+		if loc, err := time.LoadLocation(cfgFile.Schedule.Timezone); err == nil {
+			return time.Now().In(loc).Format("2006-01-02")
+		}
+	}
+	return time.Now().UTC().Format("2006-01-02")
 }
 
 // ── Manual Telemetry ───────────────────────────────────────────────────
@@ -72,64 +83,81 @@ type CSVTelemetry struct {
 	csvPath string
 }
 
-func (c *CSVTelemetry) FetchOi() (float64, error) {
+// FetchToday reads the CSV once and returns both Oi and V for "today".
+func (c *CSVTelemetry) FetchToday() (float64, float64, error) {
 	f, err := os.Open(c.csvPath)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 	defer f.Close()
 
 	reader := csv.NewReader(f)
 	records, err := reader.ReadAll()
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
-
 	if len(records) < 2 {
-		return 0, fmt.Errorf("CSV needs header + data")
+		return 0, 0, fmt.Errorf("CSV needs header + data")
 	}
 
-	today := time.Now().UTC().Format("2006-01-02")
-	for _, row := range records[1:] {
-		if len(row) >= 3 && row[0] == today {
-			oi, err := strconv.ParseFloat(row[1], 64)
-			if err != nil {
-				return 0, fmt.Errorf("CSV Oi parse error: %v", err)
-			}
-			return oi, nil
+	today := todayYYYYMMDD()
+
+	// Allow minor CSV formatting issues (whitespace, BOM) and tolerate common date formats.
+	matchDate := func(raw string) bool {
+		ds := strings.TrimSpace(raw)
+		ds = strings.TrimPrefix(ds, "\ufeff") // handle UTF-8 BOM if present
+		if ds == today {
+			return true
 		}
+		layouts := []string{"2006-01-02", "2006/01/02"}
+		for _, layout := range layouts {
+			if t, err := time.Parse(layout, ds); err == nil {
+				if t.Format("2006-01-02") == today {
+					return true
+				}
+			}
+		}
+		return false
 	}
-	return 0, fmt.Errorf("no data for today (%s)", today)
+
+	for _, row := range records[1:] {
+		if len(row) < 3 {
+			continue
+		}
+		if !matchDate(row[0]) {
+			continue
+		}
+
+		oi, err := strconv.ParseFloat(strings.TrimSpace(row[1]), 64)
+		if err != nil {
+			return 0, 0, fmt.Errorf("CSV Oi parse error: %v", err)
+		}
+		v, err := strconv.ParseFloat(strings.TrimSpace(row[2]), 64)
+		if err != nil {
+			return 0, 0, fmt.Errorf("CSV V parse error: %v", err)
+		}
+
+		// Enforce the same constraints as the POST endpoint for parity across telemetry modes.
+		if oi <= 0 {
+			return 0, 0, fmt.Errorf("CSV Oi must be > 0")
+		}
+		if v < 0 {
+			return 0, 0, fmt.Errorf("CSV V must be >= 0")
+		}
+
+		return oi, v, nil
+	}
+	return 0, 0, fmt.Errorf("no data for today (%s)", today)
+}
+
+func (c *CSVTelemetry) FetchOi() (float64, error) {
+	oi, _, err := c.FetchToday()
+	return oi, err
 }
 
 func (c *CSVTelemetry) FetchV() (float64, error) {
-	f, err := os.Open(c.csvPath)
-	if err != nil {
-		return 0, err
-	}
-	defer f.Close()
-
-	reader := csv.NewReader(f)
-	records, err := reader.ReadAll()
-	if err != nil {
-		return 0, err
-	}
-
-	if len(records) < 2 {
-		return 0, fmt.Errorf("CSV needs header + data")
-	}
-
-	today := time.Now().UTC().Format("2006-01-02")
-	for _, row := range records[1:] {
-		if len(row) >= 3 && row[0] == today {
-			v, err := strconv.ParseFloat(row[2], 64)
-			if err != nil {
-				return 0, fmt.Errorf("CSV V parse error: %v", err)
-			}
-			return v, nil
-		}
-	}
-	return 0, fmt.Errorf("no data for today (%s)", today)
+	_, v, err := c.FetchToday()
+	return v, err
 }
 
 // ── Webhook Telemetry ──────────────────────────────────────────────────
@@ -163,19 +191,43 @@ func (w *WebhookTelemetry) Update(oi, v float64) {
 
 // telemetryHandler accepts POST requests to update telemetry (manual/webhook modes)
 func telemetryHandler(w http.ResponseWriter, r *http.Request) {
+	// Optional shared-secret auth (recommended if server is network-exposed)
+	if cfgFile != nil && cfgFile.Telemetry.AuthToken != "" {
+		tok := r.Header.Get("X-PDM-Token")
+		if tok == "" {
+			// allow Authorization: Bearer <token>
+			const pfx = "Bearer "
+			authz := r.Header.Get("Authorization")
+			if len(authz) > len(pfx) && authz[:len(pfx)] == pfx {
+				tok = authz[len(pfx):]
+			}
+		}
+		if tok != cfgFile.Telemetry.AuthToken {
+			writeJSONError(w, http.StatusUnauthorized, "unauthorized")
+			return
+		}
+	}
+
 	if r.Method != http.MethodPost {
-		http.Error(w, `{"error":"Only POST allowed"}`, http.StatusMethodNotAllowed)
+		writeJSONError(w, http.StatusMethodNotAllowed, "only POST allowed")
 		return
 	}
 
 	if telemetryMode == "csv" {
-		http.Error(w, `{"error":"POST disabled in csv mode"}`, http.StatusMethodNotAllowed)
+		writeJSONError(w, http.StatusMethodNotAllowed, "POST disabled in csv mode")
 		return
 	}
 
+	// Limit request body size (the payload is tiny). Helps avoid resource exhaustion if exposed on a network.
+	r.Body = http.MaxBytesReader(w, r.Body, 8*1024)
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, `{"error":"Failed to read request body"}`, http.StatusBadRequest)
+		// If MaxBytesReader is tripped, the error string typically contains "request body too large".
+		if strings.Contains(err.Error(), "request body too large") {
+			writeJSONError(w, http.StatusRequestEntityTooLarge, "request body too large")
+			return
+		}
+		writeJSONError(w, http.StatusBadRequest, "failed to read request body")
 		return
 	}
 
@@ -184,16 +236,16 @@ func telemetryHandler(w http.ResponseWriter, r *http.Request) {
 		V  float64 `json:"v"`
 	}
 	if err := json.Unmarshal(body, &input); err != nil {
-		http.Error(w, `{"error":"Invalid JSON"}`, http.StatusBadRequest)
+		writeJSONError(w, http.StatusBadRequest, "invalid JSON")
 		return
 	}
 
 	if input.Oi <= 0 {
-		http.Error(w, `{"error":"Oi must be > 0"}`, http.StatusBadRequest)
+		writeJSONError(w, http.StatusBadRequest, "Oi must be > 0")
 		return
 	}
 	if input.V < 0 {
-		http.Error(w, `{"error":"V must be >= 0"}`, http.StatusBadRequest)
+		writeJSONError(w, http.StatusBadRequest, "V must be >= 0")
 		return
 	}
 
@@ -207,11 +259,20 @@ func telemetryHandler(w http.ResponseWriter, r *http.Request) {
 		webhookTelemetry.Update(input.Oi, input.V)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"status":    "received",
 		"oi":        input.Oi,
 		"v":         input.V,
 		"timestamp": time.Now().UTC().Format(time.RFC3339),
 	})
+}
+
+func writeJSON(w http.ResponseWriter, status int, v interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(v)
+}
+
+func writeJSONError(w http.ResponseWriter, status int, msg string) {
+	writeJSON(w, status, map[string]string{"error": msg})
 }
