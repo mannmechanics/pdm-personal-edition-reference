@@ -108,6 +108,21 @@ It is not intended for unsupervised deployment or commercial use.
 
 ⸻⸻⸻⸻⸻⸻
 
+## Contributions
+
+This repository is a **reference implementation** and does not accept
+external code contributions or pull requests.
+
+The mechanism logic and documentation are stewarded to preserve
+authoritative behaviour and interpretive consistency.
+
+Questions, clarification requests, and academic discussion may be raised
+via issues for explanatory purposes only. No changes to the mechanism
+will be accepted through PRs.
+
+
+⸻⸻⸻⸻⸻⸻
+
 ## Disclaimer
 
 This software is provided **“AS IS”**, without warranty of any kind.
