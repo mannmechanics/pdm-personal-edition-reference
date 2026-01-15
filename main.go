@@ -92,11 +92,11 @@ type StepTrace struct {
 
 	ClampedS   bool   `json:"clamped_s"`
 	ClampedCap bool   `json:"clamped_cap"`
-	Error      string `json:"error,omitempty"`
-	MerkleRoot string `json:"merkle_root"`
+	Error         string `json:"error,omitempty"`
+	HashChainRoot string `json:"hash_chain_root"`
 }
 
-func StepPDM(sPrev, oi, vtotal, mcap float64, prevMerkleRoot string, cfg PDMConfig) (float64, StepTrace) {
+func StepPDM(sPrev, oi, vtotal, mcap float64, prevHashChainRoot string, cfg PDMConfig) (float64, StepTrace) {
 	trace := StepTrace{
 		Timestamp:     time.Now().UTC(),
 		SPrev:         sPrev,
@@ -163,11 +163,11 @@ func StepPDM(sPrev, oi, vtotal, mcap float64, prevMerkleRoot string, cfg PDMConf
 	trace.Delta = delta
 	trace.SNew = sNew
 
-	// Merkle root (chained SHA256: previous root + JSON)
+	// Audit hash chain (chained SHA256: previous hash + trace JSON)
 	traceJSON, _ := json.Marshal(trace)
 	h := sha256.New()
-	h.Write([]byte(prevMerkleRoot + string(traceJSON)))
-	trace.MerkleRoot = fmt.Sprintf("%x", h.Sum(nil))
+	h.Write([]byte(prevHashChainRoot + string(traceJSON)))
+	trace.HashChainRoot = fmt.Sprintf("%x", h.Sum(nil))
 
 	return sNew, trace
 }
@@ -301,49 +301,37 @@ func configHandler(w http.ResponseWriter, r *http.Request) {
 		"show_history_days": cfgFile.Dashboard.ShowHistoryDays,
 		"schedule_run_time": cfgFile.Schedule.RunTime,
 		"schedule_timezone": cfgFile.Schedule.Timezone,
+		"telemetry_auth_required": cfgFile.Telemetry.AuthToken != "",
 	})
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	if atomic.LoadInt32(&healthy) == 1 {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+		writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 	} else {
-		http.Error(w, `{"status":"shutting_down"}`, http.StatusServiceUnavailable)
+		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"status": "shutting_down"})
 	}
 }
 
 var telemetryMode string
 
-func fetchLocalOi() float64 {
+// fetchTelemetryValues returns (Oi, V) for the current mode.
+// In CSV mode, it reads the file once per step.
+func fetchTelemetryValues() (float64, float64) {
 	switch telemetryMode {
 	case "manual":
 		oi, _ := manualTelemetry.FetchOi()
-		return oi
+		v, _ := manualTelemetry.FetchV()
+		return oi, v
 	case "csv":
-		oi, _ := csvTelemetry.FetchOi()
-		return oi
+		oi, v, _ := csvTelemetry.FetchToday()
+		return oi, v
 	case "webhook":
 		oi, _ := webhookTelemetry.FetchOi()
-		return oi
-	default:
-		return 0
-	}
-}
-
-func fetchLocalV() float64 {
-	switch telemetryMode {
-	case "manual":
-		v, _ := manualTelemetry.FetchV()
-		return v
-	case "csv":
-		v, _ := csvTelemetry.FetchV()
-		return v
-	case "webhook":
 		v, _ := webhookTelemetry.FetchV()
-		return v
+		return oi, v
 	default:
-		return 0
+		return 0, 0
 	}
 }
 
@@ -381,7 +369,7 @@ func calculateNextRun(cfg *ConfigFile) time.Time {
 func dailyRunner() {
 	prevRoot := ""
 	if stateLoaded && len(state.History) > 0 {
-		prevRoot = state.History[len(state.History)-1].MerkleRoot
+		prevRoot = state.History[len(state.History)-1].HashChainRoot
 	}
 
 	for {
@@ -390,8 +378,7 @@ func dailyRunner() {
 		log.Printf("Next PDM step scheduled for: %s (sleeping %v)", next.Format("2006-01-02 15:04:05 MST"), sleepDuration.Round(time.Minute))
 		time.Sleep(sleepDuration)
 
-		oi := fetchLocalOi()
-		vtotal := fetchLocalV()
+		oi, vtotal := fetchTelemetryValues()
 
 		// Observability: warn if telemetry is missing or zero
 		if oi == 0 {
@@ -404,7 +391,7 @@ func dailyRunner() {
 		stateMu.Lock()
 		newS, trace := StepPDM(state.S, oi, vtotal, state.MCap, prevRoot, state.Config)
 		state.S = newS
-		prevRoot = trace.MerkleRoot
+		prevRoot = trace.HashChainRoot
 		stateMu.Unlock()
 
 		persist(trace)
@@ -466,7 +453,14 @@ func main() {
 	}()
 
 	log.Printf("PDM Personal Edition starting on port %d", cfgFile.Dashboard.Port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", cfgFile.Dashboard.Port), nil))
+	srv := &http.Server{
+		Addr:              fmt.Sprintf(":%d", cfgFile.Dashboard.Port),
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       60 * time.Second,
+	}
+	log.Fatal(srv.ListenAndServe())
 }
 
 // Patent Notice and Disclaimer
