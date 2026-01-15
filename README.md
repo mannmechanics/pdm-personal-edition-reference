@@ -1,3 +1,6 @@
+Status: Stable reference implementation of Progressive Depletion Minting (PDM).
+This repository demonstrates the core mechanism and is not a production deployment.
+
 # Progressive Depletion Minting (PDM)
 ## Reference Implementation – Personal Edition
 
@@ -126,6 +129,8 @@ This reference implementation exists to demonstrate
 Deployment decisions, sector-specific adaptations, certification,
 and commercial implementations must be handled independently
 and responsibly under appropriate licensing and governance.
+
+
 
 ⸻⸻⸻⸻⸻⸻
 
