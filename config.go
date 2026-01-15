@@ -29,6 +29,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -56,8 +57,9 @@ type ResourceConfig struct {
 }
 
 type TelemetryConfig struct {
-	Mode    string `yaml:"mode"`
-	CSVPath string `yaml:"csv_path"`
+	Mode      string `yaml:"mode"`
+	CSVPath   string `yaml:"csv_path"`
+	AuthToken string `yaml:"auth_token"`
 }
 
 type ScheduleConfig struct {
@@ -126,6 +128,12 @@ func ValidateConfig(cfg *ConfigFile) error {
 	validModes := map[string]bool{"manual": true, "csv": true, "webhook": true}
 	if !validModes[cfg.Telemetry.Mode] {
 		return fmt.Errorf("telemetry.mode must be 'manual', 'csv', or 'webhook'")
+	}
+
+	if cfg.Telemetry.Mode == "csv" {
+		if strings.TrimSpace(cfg.Telemetry.CSVPath) == "" {
+			return fmt.Errorf("telemetry.csv_path is required when telemetry.mode is csv")
+		}
 	}
 
 	if _, err := time.Parse("15:04", cfg.Schedule.RunTime); err != nil {
