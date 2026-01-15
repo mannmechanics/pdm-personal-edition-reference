@@ -32,7 +32,7 @@ Think of it like a thermostat for resources:
 **What it does:**
 - Tracks your supply (S) against outstanding demand (Oi)
 - Calculates the L ratio (S ÷ Oi)
-- Burns (removes) supply when velocity is high
+- Burns supply in proportion to activity (V), modulated by velocity relative to the target (higher velocity reduces the burn multiplier in this reference controller)
 - Mints (adds) supply when the ratio drops too low
 - Logs every step with full audit trail
 
@@ -331,6 +331,8 @@ A healthy system stays between the green lines, oscillating around the gold line
 ```bash
 curl -X POST http://localhost:8080/api/telemetry \
   -H "Content-Type: application/json" \
+  # Optional: if telemetry.auth_token is set in config.yaml
+  # -H "X-PDM-Token: <your_token>" \
   -d '{"oi": 1000000, "v": 50000}'
 ```
 
@@ -427,7 +429,7 @@ curl http://localhost:8080/pdm/v1/state
     "v_total": 50000,
     "l": 0.618,
     "s_new": 618000,
-    "merkle_root": "a1b2c3..."
+    "hash_chain_root": "a1b2c3..."
   },
   "history": [...]
 }
@@ -558,7 +560,7 @@ schedule:
 
 **Experiment:**
 1. Start with Oi=1000, V=100 (balanced)
-2. Try high velocity: Oi=1000, V=500 (watch S decrease)
+2. Try high activity (V): Oi=1000, V=500 (watch S decrease)
 3. Try low Oi: Oi=500, V=100 (watch L change)
 
 ### Use Case 2: Inventory Management Simulation
@@ -730,9 +732,11 @@ The golden ratio (≈ 0.618) appears throughout nature as a point of balance:
 
 In PDM, it represents the optimal ratio of supply to demand — not too scarce, not too abundant.
 
-### The Merkle Chain
+### The Hash Chain
 
-Every step produces a `merkle_root` — a cryptographic hash that chains to the previous step:
+Every step produces a `hash_chain_root`, a cryptographic hash that chains to the previous step.
+
+The current `hash_chain_root` value is included in the `/pdm/v1/state` response under `latest_trace.hash_chain_root` and in each item of `history`.
 
 ```
 Step 1 → hash_1
