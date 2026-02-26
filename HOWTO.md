@@ -78,8 +78,8 @@ If you get "command not found", install Go first.
 ### Option 2: Clone from Repository
 
 ```bash
-git clone https://github.com/yourusername/pdm-personal.git
-cd pdm-personal
+git clone https://github.com/mannmechanics/pdm-personal-edition-reference
+cd pdm-personal-edition-reference
 ```
 
 ### Build the Binary
@@ -227,10 +227,10 @@ pdm-personal.exe
 
 You should see:
 ```
-2025/01/07 12:00:00 Loaded config: Pool=My Resource Pool, Mode=manual, Port=8080
-2025/01/07 12:00:00 Bootstrapped from config.yaml
-2025/01/07 12:00:00 PDM Personal Edition starting on port 8080
-2025/01/07 12:00:00 Next PDM step scheduled for: 2025-01-08 00:00:00 UTC (sleeping 12h0m0s)
+2026/01/07 12:00:00 Loaded config: Pool=My Resource Pool, Mode=manual, Port=8080
+2026/01/07 12:00:00 Bootstrapped from config.yaml
+2026/01/07 12:00:00 PDM Personal Edition starting on port 8080
+2026/01/07 12:00:00 Next PDM step scheduled for: 2026-01-08 00:00:00 UTC (sleeping 12h0m0s)
 ```
 
 ### Open the Dashboard
@@ -274,8 +274,8 @@ Your state is automatically saved and will be restored when you restart.
 │   │            ════════════════════════              │ 0.60│
 │   ─────────────────────────────────────────────────────    │
 │                                                             │
-│   Last updated: 2025-01-07 00:00:00 UTC                    │
-│   Next step: 2025-01-08 00:00:00 UTC                       │
+│   Last updated: 2026-01-07 00:00:00 UTC                    │
+│   Next step: 2026-01-08 00:00:00 UTC                       │
 │                                                             │
 │   ┌─────────────────────────────────────────────────────┐  │
 │   │ Today's Telemetry                                   │  │
@@ -342,7 +342,7 @@ curl -X POST http://localhost:8080/api/telemetry \
   "status": "received",
   "oi": 1000000,
   "v": 50000,
-  "timestamp": "2025-01-07T12:00:00Z"
+  "timestamp": "2026-01-07T12:00:00Z"
 }
 ```
 
@@ -355,11 +355,11 @@ curl -X POST http://localhost:8080/api/telemetry \
 Create `data/telemetry.csv`:
 ```csv
 date,oi,v
-2025-01-01,1000000,50000
-2025-01-02,1020000,55000
-2025-01-03,1015000,48000
-2025-01-04,1030000,62000
-2025-01-05,1025000,51000
+2026-01-01,1000000,50000
+2026-01-02,1020000,55000
+2026-01-03,1015000,48000
+2026-01-04,1030000,62000
+2026-01-05,1025000,51000
 ```
 
 **Format:**
@@ -423,7 +423,7 @@ curl http://localhost:8080/pdm/v1/state
   "s_current": 618000,
   "m_cap": 1000000,
   "latest_trace": {
-    "timestamp": "2025-01-07T00:00:00Z",
+    "timestamp": "2026-01-07T00:00:00Z",
     "s_prev": 620000,
     "o_i": 1000000,
     "v_total": 50000,
@@ -484,7 +484,7 @@ curl -X POST http://localhost:8080/api/telemetry \
   "status": "received",
   "oi": 1000000,
   "v": 50000,
-  "timestamp": "2025-01-07T12:00:00Z"
+  "timestamp": "2026-01-07T12:00:00Z"
 }
 ```
 
@@ -500,14 +500,14 @@ curl -X POST http://localhost:8080/api/telemetry \
 
 When a PDM step runs, you'll see:
 ```
-2025/01/07 00:00:00 Next PDM step scheduled for: 2025-01-08 00:00:00 UTC (sleeping 24h0m0s)
-2025/01/07 00:00:00 PDM step completed → L=0.6180  S=618000.00
+2026/01/07 00:00:00 Next PDM step scheduled for: 2026-01-08 00:00:00 UTC (sleeping 24h0m0s)
+2026/01/07 00:00:00 PDM step completed → L=0.6180  S=618000.00
 ```
 
 If telemetry is missing:
 ```
-2025/01/07 00:00:00 WARNING: Oi is zero or missing — PDM step will use MinO fallback
-2025/01/07 00:00:00 WARNING: V is zero — no burn will occur this step
+2026/01/07 00:00:00 WARNING: Oi is zero or missing — PDM step will use MinO fallback
+2026/01/07 00:00:00 WARNING: V is zero — no burn will occur this step
 ```
 
 ### History CSV
@@ -515,7 +515,7 @@ If telemetry is missing:
 Every step is logged to `data/history.csv`:
 ```csv
 timestamp,oi,v_total,s_prev,s_new,l_ratio,clamped_s,clamped_cap,error
-2025-01-07 00:00:00,1000000.000000,50000.000000,620000.000000,618000.000000,0.6180,false,false,
+2026-01-07 00:00:00,1000000.000000,50000.000000,620000.000000,618000.000000,0.6180,false,false,
 ```
 
 ### State JSON
@@ -585,7 +585,7 @@ telemetry:
 **CSV format:**
 ```csv
 date,oi,v
-2025-01-07,8000,500
+2026-01-07,8000,500
 ```
 - `oi` = total outstanding orders
 - `v` = units shipped today
@@ -759,7 +759,7 @@ This creates an **immutable audit trail**. Any tampering with historical data wo
 
 ## Getting Help
 
-- **Technical issues:** Open a GitHub issue
+- **Technical issues:** https://github.com/mannmechanics/pdm-personal-edition-reference
 - **PDM concepts:** Contact Mann Mechanics
 - **Licensing questions:** See README.md for certification guidance
 
@@ -769,7 +769,7 @@ This creates an **immutable audit trail**. Any tampering with historical data wo
 
 | Version | Date | Notes |
 |---------|------|-------|
-| 1.0.0 | January 2025 | Initial release |
+| 1.0.0 | January 2026 | Initial release |
 
 ---
 
