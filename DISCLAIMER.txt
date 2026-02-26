@@ -35,5 +35,6 @@ Any ambiguity in interpretation must favour:
 • Non-extraction
 • Long-term sustainability
 
+
 This implementation must not be used to infer guarantees
 about real-world economic outcomes.
