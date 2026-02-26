@@ -1,4 +1,4 @@
-## v0.7.0 – Reference Edition (Stable)
+## v1.0.0 – Reference Edition (Stable)
 
 - Aligned documentation with implementation semantics
 - Hardened telemetry ingestion (CSV + API parity)
