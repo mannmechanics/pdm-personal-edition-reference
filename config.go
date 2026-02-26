@@ -17,6 +17,7 @@ explicit written licence from the rights holder.
 
 Patent protections may apply regardless of software licence.
 
+
 Provided "AS IS" without warranty of any kind.
 */
 
