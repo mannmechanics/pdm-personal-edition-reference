@@ -21,3 +21,4 @@ func TestStepTraceJSON_FieldName_HashChainRoot(t *testing.T) {
 		t.Fatalf("did not expect merkle_root in JSON, got: %s", s)
 	}
 }
+
