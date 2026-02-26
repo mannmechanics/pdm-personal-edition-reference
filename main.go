@@ -480,4 +480,3 @@ func main() {
 // This implementation does not create money, does not set prices, and does not
 // intermediate transactions. It operates solely as a local, auditable system
 // control mechanism.
-
