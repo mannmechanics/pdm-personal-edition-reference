@@ -12,6 +12,7 @@ resource:
 telemetry:
   mode: "manual"                  # Options: "manual", "csv", "webhook"
   csv_path: "./data/telemetry.csv"  # Path to CSV file (if mode is "csv")
+  auth_token: ""                 # Optional shared secret for POST /api/telemetry (recommended if network-exposed)
 
 schedule:
   run_time: "00:00"               # Daily PDM step time (HH:MM format)
@@ -37,8 +38,8 @@ alerts:
 # csv:      Reads from a CSV file with format: date,oi,v
 #           Example CSV (data/telemetry.csv):
 #             date,oi,v
-#             2025-01-06,1600000,12000
-#             2025-01-07,1580000,15000
+#             2026-01-06,1600000,12000
+#             2026-01-07,1580000,15000
 #
 # webhook:  Receives Oi and V via POST to /api/telemetry from external systems
 #           Uses the same port as the dashboard (dashboard.port)
