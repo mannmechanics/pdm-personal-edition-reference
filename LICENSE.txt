@@ -64,6 +64,5 @@ RESERVATION OF RIGHTS
 
 All rights not expressly granted are reserved.
 
-
 For commercial licensing, certification, or authorised implementation,
 contact the rights holder.
