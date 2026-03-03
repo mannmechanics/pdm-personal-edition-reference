@@ -21,7 +21,7 @@ Provided "AS IS" without warranty of any kind.
 */
 
 // pdm-personal/main.go
-// MannCert PDM Personal Edition v1.0.0
+// MannCert PDM Personal Edition v1.0.1
 // Integrates existing PDM core with personal config, telemetry, and dashboard
 // Core PDM logic (StepPDM, etc.) is unchanged and patent-locked
 
@@ -68,6 +68,31 @@ func DefaultConfig(mcap float64) PDMConfig {
 	}
 }
 
+func ValidatePDMConfig(cfg PDMConfig, mcap float64) error {
+	if cfg.PhiTarget <= 0 || cfg.PhiTarget >= 1 {
+		return fmt.Errorf("phi_target must be in (0, 1), got %f", cfg.PhiTarget)
+	}
+	if cfg.BandLow <= 0 || cfg.BandHigh <= 0 {
+		return fmt.Errorf("band_low and band_high must be > 0")
+	}
+	if cfg.BandLow >= cfg.BandHigh {
+		return fmt.Errorf("band_low must be < band_high, got %f >= %f", cfg.BandLow, cfg.BandHigh)
+	}
+	if cfg.BandLow > cfg.PhiTarget || cfg.PhiTarget > cfg.BandHigh {
+		return fmt.Errorf("band_low <= phi_target <= band_high required, got %f <= %f <= %f violated", cfg.BandLow, cfg.PhiTarget, cfg.BandHigh)
+	}
+	if mcap <= 0 {
+		return fmt.Errorf("mcap must be > 0")
+	}
+	if cfg.MinS <= 0 {
+		return fmt.Errorf("min_s must be > 0")
+	}
+	if cfg.MinO <= 0 {
+		return fmt.Errorf("min_o must be > 0")
+	}
+	return nil
+}
+
 type StepTrace struct {
 	Timestamp     time.Time `json:"timestamp"`
 	SPrev         float64   `json:"s_prev"`
@@ -90,8 +115,8 @@ type StepTrace struct {
 	Delta      float64 `json:"delta"`
 	SNew       float64 `json:"s_new"`
 
-	ClampedS   bool   `json:"clamped_s"`
-	ClampedCap bool   `json:"clamped_cap"`
+	ClampedS      bool   `json:"clamped_s"`
+	ClampedCap    bool   `json:"clamped_cap"`
 	Error         string `json:"error,omitempty"`
 	HashChainRoot string `json:"hash_chain_root"`
 }
@@ -145,6 +170,9 @@ func StepPDM(sPrev, oi, vtotal, mcap float64, prevHashChainRoot string, cfg PDMC
 	var delta float64
 	if l < cfg.BandLow {
 		mintRaw := cfg.PhiTarget*oi - sTemp
+		if mintRaw < 0 {
+			mintRaw = 0
+		}
 		damping := math.Pow(cfg.PhiTarget, sTemp/mcap)
 		delta = mintRaw * damping
 		trace.MintRaw = mintRaw
@@ -296,12 +324,12 @@ func stateHandler(w http.ResponseWriter, r *http.Request) {
 func configHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"pool_name":         cfgFile.Pool.Name,
-		"unit":              cfgFile.Resource.Unit,
-		"show_history_days": cfgFile.Dashboard.ShowHistoryDays,
-		"schedule_run_time": cfgFile.Schedule.RunTime,
-		"schedule_timezone": cfgFile.Schedule.Timezone,
-		"telemetry_auth_required": cfgFile.Telemetry.AuthToken != "",
+		"pool_name":                cfgFile.Pool.Name,
+		"unit":                     cfgFile.Resource.Unit,
+		"show_history_days":        cfgFile.Dashboard.ShowHistoryDays,
+		"schedule_run_time":        cfgFile.Schedule.RunTime,
+		"schedule_timezone":        cfgFile.Schedule.Timezone,
+		"telemetry_auth_required":  cfgFile.Telemetry.AuthToken != "",
 	})
 }
 
@@ -420,6 +448,11 @@ func main() {
 			Config: DefaultConfig(cfgFile.Pool.MCap),
 		}
 		log.Println("Bootstrapped from config.yaml")
+	}
+
+	// Validate PDM config coherence constraints (Section 3 of whitepaper)
+	if err := ValidatePDMConfig(state.Config, state.MCap); err != nil {
+		log.Fatalf("PDMConfig validation error: %v", err)
 	}
 
 	http.HandleFunc("/pdm/v1/state", stateHandler)
