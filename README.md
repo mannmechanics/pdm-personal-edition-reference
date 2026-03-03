@@ -1,6 +1,6 @@
 # Progressive Depletion Minting (PDM)
 
-## Reference Implementation — Personal Edition v1.0.1
+## Reference Implementation - Personal Edition v1.0.1
 
 A deterministic control mechanism governing the expansion and contraction of bounded resource pools in response to measurable system conditions. Supply is added only when auditable depletion is detected, and each successive expansion becomes structurally more resistant than the last.
 
