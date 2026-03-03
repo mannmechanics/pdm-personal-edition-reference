@@ -20,7 +20,7 @@ All tests correspond explicitly to formal statements in the whitepaper.
 | Cap enforcement | Theorem 2 | Supply is bounded: S ≤ M at all steps |
 | Non-negativity | Theorem 1 | Supply remains S ≥ 0 under all tested conditions |
 | Conditional minting | Theorem 4 | Minting occurs only when L < b_L |
-| Hash chain integrity | Section 4.7 | Each trace hash chains deterministically from the previous |
+| Hash chain integrity | Section 4.7 | Each trace hash forms a valid forward-linked chain within a single execution |
 
 ## How to Run
 ```bash
@@ -40,6 +40,10 @@ The binary is self-contained. The core `StepPDM` function and `ValidatePDMConfig
 - Deterministic verification
 - Independence from HTTP, telemetry ingestion, or scheduler layers
 - Reproducibility of all invariant checks
+
+## Reproducibility
+
+All scenarios use fixed telemetry inputs defined within the simulation source. Hash determinism across runs requires fixed timestamps in the test harness.
 
 ## Output
 
