@@ -1,6 +1,6 @@
-# PDM Simulation Harness
+# PDM Verification Harness
 
-Deterministic verification harness for Progressive Depletion Minting (PDM) Personal Edition v1.0.1.
+Deterministic test harness validating the formal guarantees of Progressive Depletion Minting (PDM) Personal Edition v1.0.1.
 
 This binary exercises the `StepPDM` state transition function directly and validates all formal guarantees stated in the whitepaper against reproducible test scenarios.
 
