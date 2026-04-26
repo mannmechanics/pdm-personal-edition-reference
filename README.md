@@ -156,5 +156,11 @@ This software is provided "AS IS", without warranty of any kind. The author make
 This implementation demonstrates mechanism behaviour only. It is not production software. Sector-specific deployment, calibration, certification, and commercial implementation require appropriate licensing and governance.
  
 ---
+
+## Companion specifications
+
+A coordinated specification stack accompanies this Personal Edition reference implementation. See [`/specifications/v1.0/`](specifications/v1.0/) for the Foundation Paper, Technical Overview, Telemetry Companion Paper, Licensing Framework, Institutional Brief, Engagement Fee Schedule, and Humanity Allocation Transition Roadmap.
+
+---
  
 (c) Valraj Singh Mann. All rights reserved.
