@@ -4,7 +4,7 @@
  
 A deterministic control mechanism governing the expansion and contraction of bounded resource pools in response to measurable system conditions. Supply is added only when auditable depletion is detected, and each successive expansion becomes structurally more resistant than the last.
  
-**Patent:** UKIPO GB2513172.3 (filed August 2025)
+**Patent:** Patent application: UKIPO GB2513172.3 (filed August 2025, pending)
 **Author:** Valraj Singh Mann
 **Framework:** Mann Mechanics
 **Registration:** Safe Creative Work ID 2601084210286 (January 8, 2026)
