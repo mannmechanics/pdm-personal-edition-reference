@@ -38,13 +38,11 @@ from the rights holder:
 
 PATENT NOTICE
 
-Progressive Depletion Minting (PDM) includes mechanisms that are
-patent protected or patent pending.
+Progressive Depletion Minting (PDM) is the subject of UK patent application GB2513172.3 (filed August 2025, pending). 
 
-Nothing in this licence grants any rights under patent law.
+No patent has yet been granted. 
 
-Unauthorised implementation of patented methods may constitute
-patent infringement regardless of software licence status.
+Nothing in this licence grants any rights under patent law. Unauthorised implementation of methods claimed in any granted patent may constitute infringement regardless of software licence status.
 
 ⸻⸻⸻⸻⸻⸻
 
