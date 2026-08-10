@@ -497,18 +497,15 @@ func main() {
 }
 
 // Patent Notice and Disclaimer
-// Certain mechanisms and methods related to Progressive Depletion Minting (PDM)
-// are protected by patents held by Valraj Singh Mann under the Mann Mechanics framework.
+// Progressive Depletion Minting (PDM) is the subject of UK patent application
+// GB2513172.3 (filed August 2025, currently pending). No patent has yet been
+// granted. Nothing in this repository grants any rights under patent law.
 //
 // Licensing Notice
-// This repository is released under the terms in LICENSE.txt (PDM Personal Edition License).
-// No patent rights are granted by access to or use of this code.
-// Commercial use or production deployment may require a separate written licence from the rights holder
-//
-// No patent rights are granted under this License.
-// Any implementation that practices patented PDM mechanisms, as defined in
-// applicable patent claims, may require a separate patent license and/or
-// certification from Mann Mechanics / MannCert.
+// This repository is released under the terms in LICENSE.txt (PDM Personal
+// Edition License). Commercial use or production deployment requires a
+// separate written licence from the rights holder. Certification is
+// administered separately by MannCert (manncert.org).
 //
 // This implementation does not create money, does not set prices, and does not
 // intermediate transactions. It operates solely as a local, auditable system
