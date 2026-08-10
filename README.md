@@ -149,7 +149,7 @@ This software is provided "AS IS", without warranty of any kind. The author make
  
 ## Registration & Provenance
  
-- **Patent:** UKIPO Application GB2513172.3 (filed August 2025)
+- **Patent:** UKIPO Application GB2513172.3 (filed August 2025, pending)
 - **Safe Creative Registration:** Work ID 2601084210286 (January 8, 2026)
 - **Repository:** github.com/mannmechanics/pdm-personal-edition-reference
  
