@@ -16,6 +16,7 @@ This software may be used, copied, and modified solely for:
 • Personal learning
 • Academic research
 • Educational purposes
+• Community projects with fewer than 10,000 users
 • Non-commercial simulation and experimentation
 
 Use must remain non-commercial at all times.
