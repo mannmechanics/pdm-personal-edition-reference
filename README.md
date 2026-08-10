@@ -4,7 +4,7 @@
  
 A deterministic control mechanism governing the expansion and contraction of bounded resource pools in response to measurable system conditions. Supply is added only when auditable depletion is detected, and each successive expansion becomes structurally more resistant than the last.
  
-**Patent:** Patent application: UKIPO GB2513172.3 (filed August 2025, pending)
+**Patent:** application: UKIPO GB2513172.3 (filed August 2025, pending)
 **Author:** Valraj Singh Mann
 **Framework:** Mann Mechanics
 **Registration:** Safe Creative Work ID 2601084210286 (January 8, 2026)
@@ -19,7 +19,7 @@ PDM replaces discretionary supply expansion with a mathematically enforced contr
  
 **Conditional Mint.** New supply is added only when the supply-to-obligation ratio falls below a defined stability band. If the ratio is within or above the band, minting is zero.
  
-**Progressive Damping.** When minting triggers, an exponential damping function reduces the amount delivered. As supply approaches the capacity ceiling, mint authority asymptotically approaches zero.
+**Progressive Damping.** When minting triggers, an exponential damping function reduces the amount delivered. When minting triggers, the proposed increment is progressively damped as utilisation rises and is separately hard-capped by remaining headroom.
  
 ---
  
@@ -107,7 +107,7 @@ It is not intended for unsupervised deployment or commercial use.
 - Financial, legal, or economic advice
 - A guarantee of real-world outcomes
  
-This implementation is not claim-complete with respect to all possible patented PDM methods and must not be represented as such.
+This implementation is not claim-complete with respect to all methods claimed in the pending patent application and must not be represented as such.
  
 ---
  
