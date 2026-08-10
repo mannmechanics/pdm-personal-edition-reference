@@ -1,7 +1,6 @@
 /*
 Progressive Depletion Minting (PDM)
 Reference Implementation – Personal Edition
-
 Author: Valraj Singh Mann
 Framework: Mann Mechanics
 
@@ -10,20 +9,22 @@ Progressive Depletion Minting (PDM).
 
 This code is provided for educational, research, and
 non-commercial demonstration purposes only.
-
 Commercial use, production deployment, or claims of
 certification or compliance are prohibited without
 explicit written licence from the rights holder.
 
-Patent protections may apply regardless of software licence.
+Certain PDM mechanisms are the subject of UK patent
+application GB2513172.3, filed August 2025 and currently
+pending. No patent has yet been granted. Nothing in this
+file grants any rights under patent law.
 
 Provided "AS IS" without warranty of any kind.
 */
 
 // pdm-personal/main.go
-// MannCert PDM Personal Edition v1.0.1
-// Integrates existing PDM core with personal config, telemetry, and dashboard
-// Core PDM logic (StepPDM, etc.) is unchanged and patent-locked
+// PDM Personal Edition v1.0.1
+// Integrates the PDM core with personal config, telemetry, and dashboard.
+// Core PDM logic (StepPDM, etc.) is unchanged from the canonical specification.
 
 package main
 
